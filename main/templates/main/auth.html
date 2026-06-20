@@ -1,0 +1,959 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Волонтёры — Вход и регистрация</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/fontsource-inter@5.0.17/latin.css" rel="stylesheet">
+    <style>
+        @import url('https://cdn.jsdelivr.net/npm/fontsource-inter@5.0.17/latin.css');
+        
+        :root {
+            --primary: #4f46e5;
+            --primary-light: #818cf8;
+            --primary-dark: #3730a3;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --info: #3b82f6;
+            --gray-50: #f8fafc;
+            --gray-100: #f1f5f9;
+            --gray-200: #e2e8f0;
+            --gray-300: #cbd5e1;
+            --gray-400: #94a3b8;
+            --gray-500: #64748b;
+            --gray-600: #475569;
+            --gray-700: #334155;
+            --gray-800: #1e293b;
+            --gray-900: #0f172a;
+            --shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+            --shadow-lg: 0 10px 25px -5px rgba(0,0,0,0.1);
+            --radius: 12px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #0f172a 100%);
+            color: var(--gray-800);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(79, 70, 229, 0.15), transparent 70%);
+            top: -100px;
+            right: -100px;
+            pointer-events: none;
+        }
+
+        body::after {
+            content: '';
+            position: absolute;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(16, 185, 129, 0.1), transparent 70%);
+            bottom: -50px;
+            left: -50px;
+            pointer-events: none;
+        }
+
+        .auth-container {
+            width: 100%;
+            max-width: 440px;
+            position: relative;
+            z-index: 1;
+            margin: auto;
+        }
+
+        .auth-header {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .auth-logo {
+            width: 64px;
+            height: 64px;
+            background: var(--primary);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            color: white;
+            margin: 0 auto 16px;
+            box-shadow: 0 8px 24px rgba(79, 70, 229, 0.4);
+        }
+
+        .auth-header h1 {
+            font-size: 28px;
+            font-weight: 800;
+            color: white;
+            letter-spacing: -0.03em;
+            margin-bottom: 8px;
+        }
+
+        .auth-header p {
+            font-size: 14px;
+            color: var(--gray-400);
+            font-weight: 500;
+        }
+
+        /* Tab Switcher */
+        .auth-tabs {
+            display: flex;
+            background: rgba(255,255,255,0.05);
+            border-radius: 12px;
+            padding: 4px;
+            margin-bottom: 24px;
+            gap: 4px;
+        }
+
+        .auth-tab {
+            flex: 1;
+            padding: 12px 16px;
+            border: none;
+            background: transparent;
+            color: var(--gray-400);
+            font-size: 14px;
+            font-weight: 600;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .auth-tab.active {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+        }
+
+        .auth-tab:hover:not(.active) {
+            color: white;
+            background: rgba(255,255,255,0.08);
+        }
+
+        /* Auth Card */
+        .auth-card {
+            background: white;
+            border-radius: 16px;
+            padding: 32px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.25);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .auth-form {
+            display: none;
+        }
+
+        .auth-form.active {
+            display: block;
+            animation: fadeIn 0.4s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(12px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .auth-card h2 {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--gray-900);
+            margin-bottom: 8px;
+        }
+
+        .auth-card .subtitle {
+            font-size: 13px;
+            color: var(--gray-500);
+            margin-bottom: 24px;
+            font-weight: 500;
+        }
+
+        /* Form Controls */
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--gray-700);
+            margin-bottom: 6px;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .input-wrapper i.input-icon {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--gray-400);
+            font-size: 16px;
+            pointer-events: none;
+        }
+
+        .form-control-custom {
+            width: 100%;
+            padding: 12px 44px 12px 42px;
+            border: 1.5px solid var(--gray-200);
+            border-radius: 10px;
+            font-size: 14px;
+            transition: all 0.2s;
+            background: var(--gray-50);
+            font-family: 'Inter', sans-serif;
+        }
+
+        .form-control-custom:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+            background: white;
+        }
+
+        .form-control-custom::placeholder {
+            color: var(--gray-400);
+        }
+
+        .input-password-toggle {
+            position: absolute;
+            right: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: transparent;
+            border: none;
+            color: var(--gray-400);
+            cursor: pointer;
+            font-size: 18px;
+            padding: 6px 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1;
+            border-radius: 8px;
+            transition: all 0.2s;
+            z-index: 2;
+        }
+
+        .input-password-toggle:hover {
+            color: var(--primary);
+            background: var(--gray-100);
+        }
+
+        /* Remember / Forgot */
+        .form-options {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            font-size: 13px;
+        }
+
+        .form-check-custom {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+        }
+
+        .form-check-custom input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            border-radius: 5px;
+            border: 2px solid var(--gray-300);
+            appearance: none;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+        }
+
+        .form-check-custom input[type="checkbox"]:checked {
+            background: var(--primary);
+            border-color: var(--primary);
+        }
+
+        .form-check-custom input[type="checkbox"]:checked::after {
+            content: '✓';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .form-check-custom span {
+            color: var(--gray-600);
+            font-weight: 500;
+        }
+
+        .forgot-link {
+            color: var(--primary);
+            font-weight: 600;
+            text-decoration: none;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        .forgot-link:hover {
+            color: var(--primary-dark);
+        }
+
+        /* Buttons */
+        .btn-primary-custom {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            background: var(--primary);
+            color: white;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: 'Inter', sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-primary-custom:hover {
+            background: var(--primary-dark);
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.4);
+            transform: translateY(-1px);
+        }
+
+        .btn-primary-custom:active {
+            transform: translateY(0);
+        }
+
+        .btn-primary-custom .spinner {
+            width: 18px;
+            height: 18px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+            display: none;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Password Strength */
+        .password-strength {
+            margin-top: 8px;
+        }
+
+        .strength-bar {
+            height: 4px;
+            background: var(--gray-200);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 6px;
+        }
+
+        .strength-fill {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.3s ease, background 0.3s ease;
+        }
+
+        .strength-text {
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .strength-weak .strength-fill { width: 25%; background: var(--danger); }
+        .strength-weak .strength-text { color: var(--danger); }
+        .strength-fair .strength-fill { width: 50%; background: var(--warning); }
+        .strength-fair .strength-text { color: var(--warning); }
+        .strength-good .strength-fill { width: 75%; background: var(--info); }
+        .strength-good .strength-text { color: var(--info); }
+        .strength-strong .strength-fill { width: 100%; background: var(--success); }
+        .strength-strong .strength-text { color: var(--success); }
+
+        /* Agreement */
+        .agreement {
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            margin-bottom: 20px;
+            font-size: 12px;
+            color: var(--gray-500);
+            line-height: 1.5;
+        }
+
+        .agreement input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            border-radius: 4px;
+            border: 2px solid var(--gray-300);
+            appearance: none;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+            flex-shrink: 0;
+            margin-top: 1px;
+        }
+
+        .agreement input[type="checkbox"]:checked {
+            background: var(--primary);
+            border-color: var(--primary);
+        }
+
+        .agreement input[type="checkbox"]:checked::after {
+            content: '✓';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-size: 10px;
+            font-weight: 700;
+        }
+
+        .agreement a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .agreement a:hover {
+            text-decoration: underline;
+        }
+
+        /* Switch link */
+        .auth-switch {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 13px;
+            color: var(--gray-500);
+        }
+
+        .auth-switch a {
+            color: var(--primary);
+            font-weight: 600;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .auth-switch a:hover {
+            text-decoration: underline;
+        }
+
+        /* Toast */
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 300;
+        }
+
+        .toast {
+            background: white;
+            border-radius: 12px;
+            padding: 16px 20px;
+            box-shadow: var(--shadow-lg);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 8px;
+            animation: slideIn 0.3s ease;
+            min-width: 300px;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        .toast.success { border-left: 4px solid var(--success); }
+        .toast.error { border-left: 4px solid var(--danger); }
+        .toast.info { border-left: 4px solid var(--info); }
+        .toast .toast-icon { font-size: 20px; }
+        .toast.success .toast-icon { color: var(--success); }
+        .toast.error .toast-icon { color: var(--danger); }
+        .toast.info .toast-icon { color: var(--info); }
+        .toast .toast-message { font-size: 14px; font-weight: 600; color: var(--gray-800); }
+
+        /* Footer */
+        .auth-footer {
+            text-align: center;
+            margin-top: 32px;
+            font-size: 12px;
+            color: var(--gray-500);
+        }
+
+        /* Responsive */
+        @media (max-width: 480px) {
+            .auth-card { padding: 24px; }
+            .auth-header h1 { font-size: 24px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="auth-container">
+        <div class="auth-header">
+            <div class="auth-logo"><i class="bi bi-heart-pulse-fill"></i></div>
+            <h1>Волонтёры</h1>
+            <p>Присоединяйся к команде добра</p>
+        </div>
+
+        <!-- Main Auth Tabs -->
+        <div class="auth-tabs" id="mainTabs">
+            <button class="auth-tab active" data-tab="volunteer-login" onclick="switchMainTab('volunteer-login')"><i class="bi bi-box-arrow-in-right me-1"></i> Вход</button>
+            <button class="auth-tab" data-tab="volunteer-register" onclick="switchMainTab('volunteer-register')"><i class="bi bi-person-plus me-1"></i> Регистрация</button>
+            <button class="auth-tab" data-tab="organizer-login" onclick="switchMainTab('organizer-login')"><i class="bi bi-building me-1"></i> Организатор</button>
+        </div>
+
+        <div class="auth-card">
+            
+            <!-- VOLUNTEER LOGIN -->
+            <div class="auth-form active" id="form-volunteer-login">
+                <h2>Добро пожаловать!</h2>
+                <p class="subtitle">Войдите в свой аккаунт волонтёра</p>
+
+                <form method="POST" action="/login/">
+                    {% csrf_token %}
+                    <input
+                        type="hidden"
+                        name="role"
+                        value="volunteer"
+                    >
+                    <div class="form-group">
+                        <label>Логин</label>
+                        <div class="input-wrapper">
+                            <i class="bi bi-person input-icon"></i>
+                            <input type="text" 
+                            name="username"
+                            class="form-control-custom latin-special-input" 
+                            placeholder="ivan_volunteer" 
+                            maxlength="50" 
+                            required autocomplete="username">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Пароль</label>
+                        <div class="input-wrapper">
+                            <i class="bi bi-lock input-icon"></i>
+                            <input type="password" 
+                            name="password"
+                            class="form-control-custom latin-special-input"
+                            id="volLoginPassword" 
+                            placeholder="Введите пароль" 
+                            maxlength="50" 
+                            required autocomplete="current-password">
+                            <button type="button" class="input-password-toggle" onclick="togglePassword('volLoginPassword', this)" aria-label="Показать пароль"><i class="bi bi-eye"></i></button>
+                        </div>
+                    </div>
+
+                    <div class="form-options">
+                        <label class="form-check-custom">
+                            <input
+                                type="checkbox"
+                                name="remember_me"
+                            >
+                            <span>Запомнить меня</span>
+                        </label>
+                        <a class="forgot-link" onclick="showToast('Ссылка для сброса отправлена на почту', 'info')">Забыли пароль?</a>
+                    </div>
+
+                    <button type="submit" class="btn-primary-custom">
+                        <span class="spinner" id="loginSpinner"></span>
+                        <span class="btn-text">Войти</span>
+                        <i class="bi bi-arrow-right btn-icon-arrow"></i>
+                    </button>
+                </form>
+
+                <div class="auth-switch">Нет аккаунта? <a onclick="switchMainTab('volunteer-register')">Зарегистрироваться</a></div>
+            </div>
+
+            <!-- VOLUNTEER REGISTER -->
+            <div class="auth-form" id="form-volunteer-register">
+                <h2>Создать аккаунт</h2>
+                <p class="subtitle">Заполните данные для регистрации волонтёра</p>
+
+                <form method="POST"
+                    action="/register/"
+                    id="volunteerRegisterForm">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label>Имя и Фамилия</label>
+                        <div class="input-wrapper">
+                            <i class="bi bi-person input-icon"></i>
+                            <input type="text" 
+                            name="full_name"
+                            class="form-control-custom cyrillic-input" 
+                            placeholder="Иван Иванов" 
+                            maxlength="50" 
+                            required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Никнейм</label>
+                        <div class="input-wrapper">
+                            <i class="bi bi-at input-icon"></i>
+                            <input type="text" 
+                            name="username"
+                            class="form-control-custom latin-special-input" 
+                            placeholder="ivan_volunteer" 
+                            maxlength="50" 
+                            required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Email</label>
+                        <div class="input-wrapper">
+                            <i class="bi bi-envelope input-icon"></i>
+                            <input type="email" 
+                            name="email"
+                            class="form-control-custom latin-only-input" 
+                            placeholder="ivan@mail.ru" 
+                            maxlength="50" 
+                            required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Телефон</label>
+                        <div class="input-wrapper">
+                            <i class="bi bi-phone input-icon"></i>
+                            <input type="tel" 
+                            name="phone"
+                            class="form-control-custom phone-input" 
+                            placeholder="+7 (999) 123-45-67" 
+                            maxlength="18" 
+                            inputmode="tel" 
+                            required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Город</label>
+                        <div class="input-wrapper">
+                            <i class="bi bi-geo-alt input-icon"></i>
+                            <input type="text" 
+                            name="city"
+                            class="form-control-custom city-input" 
+                            placeholder="Москва" 
+                            maxlength="50" 
+                            required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Пароль</label>
+                        <div class="input-wrapper">
+                            <i class="bi bi-lock input-icon"></i>
+                            <input type="password" 
+                            name="password"
+                            class="form-control-custom latin-special-input" 
+                            id="volRegPassword" placeholder="Минимум 8 символов" 
+                            maxlength="50" 
+                            required oninput="checkPasswordStrength(this.value)">
+                            <button type="button" class="input-password-toggle" onclick="togglePassword('volRegPassword', this)" aria-label="Показать пароль"><i class="bi bi-eye"></i></button>
+                        </div>
+
+                        <div class="password-strength" id="passwordStrength">
+                            <div class="strength-bar"><div class="strength-fill"></div></div>
+                            <span class="strength-text"></span>
+                        </div>
+                    </div>
+
+                    <div class="agreement">
+
+                        <input
+                            type="checkbox"
+                            id="termsCheckbox"
+                            name="terms"
+                            required
+                        >
+
+                        <span>
+
+                            Я соглашаюсь с
+
+                            <a href="{% url 'terms' %}" target="_blank">
+                                условиями использования
+                            </a>
+
+                            и
+
+                            <a href="{% url 'privacy' %}" target="_blank">
+                                политикой конфиденциальности
+                            </a>
+
+                        </span>
+
+                    </div>
+
+                    <button type="submit" class="btn-primary-custom">
+                        <span class="spinner" id="regSpinner"></span>
+                        <span class="btn-text">Зарегистрироваться</span>
+                        <i class="bi bi-check-circle btn-icon-arrow"></i>
+                    </button>
+                </form>
+
+                <div class="auth-switch">Уже есть аккаунт? <a onclick="switchMainTab('volunteer-login')">Войти</a></div>
+            </div>
+
+            <!-- ORGANIZER LOGIN -->
+            <div class="auth-form" id="form-organizer-login">
+                <h2>Вход для организатора</h2>
+                <p class="subtitle">Панель управления мероприятиями</p>
+
+                <form method="POST" action="/login/">
+                    {% csrf_token %}
+                    <input
+                        type="hidden"
+                        name="role"
+                        value="organization"
+                    >
+                    <div class="form-group">
+                        <label>Логин</label>
+                        <div class="input-wrapper">
+                            <i class="bi bi-person-badge input-icon"></i>
+                            <input
+                                type="text"
+                                name="username"
+                                class="form-control-custom latin-special-input"
+                                placeholder="Логин"
+                                maxlength="50"
+                                required
+                            >
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Пароль</label>
+                        <div class="input-wrapper">
+                            <i class="bi bi-lock input-icon"></i>
+                            <input
+                                type="password"
+                                name="password"
+                                class="form-control-custom latin-special-input"
+                                id="orgLoginPassword"
+                                placeholder="Введите пароль" maxlength="50"
+                                required
+                            >
+                            <button type="button" class="input-password-toggle" onclick="togglePassword('orgLoginPassword', this)" aria-label="Показать пароль"><i class="bi bi-eye"></i></button>
+                        </div>
+                    </div>
+
+                    <div class="form-options">
+                        <label class="form-check-custom">
+                            <input
+                                type="checkbox"
+                                name="remember_me"
+                            >
+                            <span>Запомнить меня</span>
+                        </label>
+                        <a class="forgot-link" onclick="showToast('Обратитесь к администратору для сброса', 'info')">Забыли пароль?</a>
+                    </div>
+
+                    <button type="submit" class="btn-primary-custom">
+                        <span class="spinner" id="orgLoginSpinner"></span>
+                        <span class="btn-text">Войти</span>
+                        <i class="bi bi-building btn-icon-arrow"></i>
+                    </button>
+                </form>
+
+                <div class="auth-switch">Не нашли аккаунт? <a onclick="showToast('Обратитесь к главному администратору', 'info')">Связаться с поддержкой</a></div>
+            </div>
+
+        </div>
+
+        <div class="auth-footer">© 2025 Волонтёры. Все права защищены.</div>
+    </div>
+
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script>
+        function switchMainTab(tabId) {
+            document.querySelectorAll('.auth-tab').forEach(el => el.classList.remove('active'));
+            document.querySelector(`[data-tab="${tabId}"]`).classList.add('active');
+            document.querySelectorAll('.auth-form').forEach(el => el.classList.remove('active'));
+            document.getElementById('form-' + tabId).classList.add('active');
+        }
+
+        function togglePassword(inputId, btn) {
+            const input = document.getElementById(inputId);
+            const icon = btn.querySelector('i');
+            if (!input || !icon) return;
+            const isPassword = input.type === 'password';
+            input.type = isPassword ? 'text' : 'password';
+            icon.classList.toggle('bi-eye', !isPassword);
+            icon.classList.toggle('bi-eye-slash', isPassword);
+        }
+
+        function checkPasswordStrength(password) {
+            const container = document.getElementById('passwordStrength');
+            const text = container.querySelector('.strength-text');
+            if (!password) { container.className = 'password-strength'; text.textContent = ''; return; }
+            let score = 0;
+            if (password.length >= 8) score++;
+            if (/[A-Z]/.test(password)) score++;
+            if (/[0-9]/.test(password)) score++;
+            if (/[^A-Za-z0-9@_]/.test(password)) score++;
+            container.classList.remove('strength-weak', 'strength-fair', 'strength-good', 'strength-strong');
+            if (score <= 1) { container.classList.add('strength-weak'); text.textContent = 'Слабый пароль'; }
+            else if (score === 2) { container.classList.add('strength-fair'); text.textContent = 'Средний пароль'; }
+            else if (score === 3) { container.classList.add('strength-good'); text.textContent = 'Хороший пароль'; }
+            else { container.classList.add('strength-strong'); text.textContent = 'Надёжный пароль'; }
+        }
+
+        function handleVolunteerLogin(e) {
+            e.preventDefault(); 
+            showLoading('loginSpinner', e.target.querySelector('.btn-text'), e.target.querySelector('.btn-icon-arrow'));
+            setTimeout(() => { resetLoading('loginSpinner', 'Войти', e.target.querySelector('.btn-icon-arrow')); showToast('Успешный вход! Добро пожаловать!', 'success'); }, 1500);
+        }
+
+        function handleVolunteerRegister(e) {
+            e.preventDefault();
+            
+            // Исправленная проверка галочки
+            const termsCheckbox = document.getElementById('termsCheckbox');
+            if (!termsCheckbox.checked) {
+                showToast('Вы должны согласиться с условиями пользования, чтобы продолжить регистрацию', 'error');
+                return;
+            }
+
+            showLoading('regSpinner', e.target.querySelector('.btn-text'), e.target.querySelector('.btn-icon-arrow'));
+            setTimeout(() => { 
+                resetLoading('regSpinner', 'Зарегистрироваться', e.target.querySelector('.btn-icon-arrow')); 
+                showToast('Регистрация успешна! Проверьте почту для подтверждения.', 'success'); 
+            }, 1500);
+        }
+
+        function handleOrganizerLogin(e) {
+            e.preventDefault(); 
+            showLoading('orgLoginSpinner', e.target.querySelector('.btn-text'), e.target.querySelector('.btn-icon-arrow'));
+            setTimeout(() => { resetLoading('orgLoginSpinner', 'Войти', e.target.querySelector('.btn-icon-arrow')); showToast('Успешный вход в панель организатора!', 'success'); }, 1500);
+        }
+
+        function showLoading(spinnerId, btnText, btnArrow) {
+            const spinner = document.getElementById(spinnerId);
+            if(spinner) spinner.style.display = 'block';
+            if(btnText) btnText.textContent = 'Обработка...';
+            if(btnArrow) btnArrow.style.display = 'none';
+        }
+
+        function resetLoading(spinnerId, originalText, btnArrow) {
+            const spinner = document.getElementById(spinnerId);
+            if(spinner) spinner.style.display = 'none';
+            const btnText = spinnerId === 'loginSpinner' ? document.querySelector('#form-volunteer-login .btn-text') : 
+                            spinnerId === 'regSpinner' ? document.querySelector('#form-volunteer-register .btn-text') : 
+                            document.querySelector('#form-organizer-login .btn-text');
+            if(btnText) btnText.textContent = originalText;
+            if(btnArrow) btnArrow.style.display = 'inline';
+        }
+
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            let icon = type === 'success' ? 'bi-check-circle-fill' : type === 'error' ? 'bi-exclamation-circle-fill' : 'bi-info-circle-fill';
+            toast.innerHTML = `<span class="toast-icon"><i class="${icon}"></i></span><span class="toast-message">${message}</span>`;
+            container.appendChild(toast);
+            setTimeout(() => { toast.style.transition = 'all 0.3s ease'; toast.style.opacity = '0'; toast.style.transform = 'translateX(100%)'; setTimeout(() => toast.remove(), 300); }, 3000);
+        }
+
+        // --- INPUT VALIDATION & MASKING ---
+        document.addEventListener('DOMContentLoaded', () => {
+            // Cyrillic only (Имя и Фамилия)
+            document.querySelectorAll('.cyrillic-input').forEach(el => {
+                el.addEventListener('input', function() { this.value = this.value.replace(/[^а-яёА-ЯЁ\s-]/g, ''); });
+            });
+
+            // Latin, digits, @, _ (Никнейм, Логин, Пароль)
+            document.querySelectorAll('.latin-special-input').forEach(el => {
+                el.addEventListener('input', function() { this.value = this.value.replace(/[^a-zA-Z0-9@_]/g, ''); });
+            });
+
+            // Latin only (Email)
+            document.querySelectorAll('.latin-only-input').forEach(el => {
+                el.addEventListener('input', function() { this.value = this.value.replace(/[^a-zA-Z0-9@._-]/g, ''); });
+            });
+
+            // Phone Mask: +/_ (___) ___-__-__ (12 digits, starts with 7 or 8)
+            document.querySelectorAll('.phone-input').forEach(el => {
+                el.addEventListener('input', function(e) {
+                    let digits = this.value.replace(/\D/g, '');
+                    if (digits.length > 13) digits = digits.slice(0, 13);
+                    if (digits.length > 0 && digits[0] !== '7' && digits[0] !== '8') {
+                        digits = digits.slice(1); 
+                        if (digits.length === 0 || (digits[0] !== '7' && digits[0] !== '8')) { this.value = ''; return; }
+                    }
+                    if (digits.length === 0) { this.value = ''; return; }
+                    
+                    let f = digits[0] === '7' ? '+7' : '8';
+                    if (digits.length > 1) f += ' (' + digits.slice(1, 4);
+                    if (digits.length > 4) f += ') ' + digits.slice(4, 7);
+                    if (digits.length > 7) f += '-' + digits.slice(7, 9);
+                    if (digits.length > 9) f += '-' + digits.slice(9, 13);
+                    this.value = f;
+                });
+            });
+
+            // City: Auto-capitalize first letter, Cyrillic only
+            document.querySelectorAll('.city-input').forEach(el => {
+                el.addEventListener('input', function() {
+                    let val = this.value.replace(/[^а-яёА-ЯЁ\s-]/g, '');
+                    if (val.length > 0) val = val.charAt(0).toUpperCase() + val.slice(1);
+                    this.value = val;
+                });
+            });
+        });
+    </script>
+
+    {% if messages %}
+
+    <script>
+
+        document.addEventListener('DOMContentLoaded', function() {
+
+            {% for message in messages %}
+
+                showToast(
+                    "{{ message|escapejs }}",
+                    "error"
+                );
+
+            {% endfor %}
+
+        });
+
+    </script>
+
+    {% endif %}
+</body>
+</html>
+

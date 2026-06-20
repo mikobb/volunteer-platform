@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Сертификат</title>
+
+    <style>
+        body{
+            font-family: Arial, sans-serif;
+            background:#f5f5f5;
+            padding:40px;
+        }
+
+        .certificate{
+            background:white;
+            padding:60px;
+            max-width:900px;
+            margin:auto;
+            border:10px solid #4f46e5;
+            text-align:center;
+        }
+
+        h1{
+            color:#4f46e5;
+            margin-bottom:40px;
+        }
+
+        .name{
+            font-size:32px;
+            font-weight:bold;
+            margin:30px 0;
+        }
+
+        .event{
+            font-size:24px;
+            margin:20px 0;
+        }
+
+        .hours{
+            font-size:22px;
+            color:#10b981;
+            font-weight:bold;
+        }
+    </style>
+</head>
+<body>
+
+<div class="certificate">
+
+    <h1>СЕРТИФИКАТ</h1>
+
+    <p>Настоящим подтверждается, что</p>
+
+    <div class="name">
+        {{ registration.volunteer.full_name }}
+    </div>
+
+    <p>принял(а) участие в мероприятии</p>
+
+    <div class="event">
+        «{{ registration.event.title }}»
+    </div>
+
+    <p>и успешно отработал(а)</p>
+
+    <div class="hours">
+        {{ registration.event.hours }} часов
+    </div>
+
+    <br><br>
+
+    <p>
+        Дата мероприятия:
+        {{ registration.event.date|date:"d E Y" }}
+    </p>
+
+    <br><br>
+
+    <h3>Волонтёрская платформа</h3>
+
+</div>
+
+</body>
+</html>
