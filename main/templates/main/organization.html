@@ -15,6 +15,7 @@
                 --primary: #4f46e5;
                 --primary-light: #818cf8;
                 --primary-dark: #3730a3;
+                --secondary: #818cf8;  /* 👈 ДОБАВЬ ЭТУ СТРОКУ */
                 --success: #10b981;
                 --warning: #f59e0b;
                 --danger: #ef4444;
@@ -1272,11 +1273,16 @@
                         document.getElementById('qrTotalCount').textContent = ev.total;
                         
                         const percent = ev.total > 0 ? Math.round((ev.checked_in / ev.total) * 100) : 0;
+                        console.log('Progress percent:', percent); // 👈 Отладка
+                        
                         const progressBar = document.getElementById('qrProgressBar');
                         if (progressBar) {
+                            console.log('Progress bar found, setting width to:', percent + '%');
                             progressBar.style.width = percent + '%';
+                            console.log('Progress bar width is now:', progressBar.style.width);
+                        } else {
+                            console.error('Progress bar element not found!');
                         }
-                        document.getElementById('qrProgressBar').style.width = percent + '%';
                         
                         document.getElementById('manualSpecialCode').value = ev.manual_code;
                         document.getElementById('qrActiveTime').textContent = 'Активен ' + ev.time;
@@ -1483,15 +1489,6 @@
                     btn.disabled = false;
                     btn.innerHTML = '<i class="bi bi-trash3"></i> Удалить';
                 }
-            }
-
-            // ========== УВЕДОМЛЕНИЯ ==========
-            function markAllRead() {
-                const items = document.querySelectorAll('.notification-item.unread');
-                items.forEach(item => item.classList.remove('unread'));
-                document.querySelector('.badge-dot').style.display = 'none';
-                document.getElementById('markAllReadBtn').style.display = 'none';
-                showToast('Все уведомления прочитаны');
             }
 
             // ========== TOAST (ИНЛАЙНОВЫЕ СТИЛИ) ==========
