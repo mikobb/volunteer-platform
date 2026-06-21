@@ -528,7 +528,7 @@
         <div class="auth-tabs" id="mainTabs">
             <button class="auth-tab active" data-tab="volunteer-login" onclick="switchMainTab('volunteer-login')"><i class="bi bi-box-arrow-in-right me-1"></i> Вход</button>
             <button class="auth-tab" data-tab="volunteer-register" onclick="switchMainTab('volunteer-register')"><i class="bi bi-person-plus me-1"></i> Регистрация</button>
-            <button class="auth-tab" data-tab="organizer-login" onclick="switchMainTab('organizer-login')"><i class="bi bi-building me-1"></i> Организатор</button>
+            <button class="auth-tab" data-tab="organizer-login" onclick="switchMainTab('organizer-login')"><i class="bi bi-building me-1"></i> Организация</button>
         </div>
 
         <div class="auth-card">
@@ -536,7 +536,7 @@
             <!-- VOLUNTEER LOGIN -->
             <div class="auth-form active" id="form-volunteer-login">
                 <h2>Добро пожаловать!</h2>
-                <p class="subtitle">Войдите в свой аккаунт волонтёра</p>
+                <p class="subtitle">Войдите в свой аккаунт</p>
 
                 <form method="POST" action="/login/">
                     {% csrf_token %}
