@@ -171,6 +171,132 @@
             .form-label { font-size: 13px; font-weight: 700; color: var(--gray-700); margin-bottom: 4px; }
             .employee-card { background: var(--gray-50); border-radius: 12px; padding: 16px; display: flex; align-items: center; gap: 16px; }
             .employee-card img { width: 48px; height: 48px; border-radius: 50%; }
+
+            /* Мобильная адаптация */
+            @media (max-width: 768px) {
+                /* Таблицы */
+                .custom-table {
+                    display: block;
+                    overflow-x: auto;
+                    white-space: nowrap;
+                }
+                
+                .custom-table thead {
+                    display: none;
+                }
+                
+                .custom-table tbody tr {
+                    display: block;
+                    margin-bottom: 16px;
+                    border: 1px solid var(--gray-200);
+                    border-radius: 8px;
+                    padding: 12px;
+                }
+                
+                .custom-table tbody td {
+                    display: block;
+                    padding: 8px 0;
+                    border: none;
+                    text-align: left;
+                }
+                
+                .custom-table tbody td:before {
+                    content: attr(data-label);
+                    font-weight: 700;
+                    color: var(--gray-600);
+                    display: block;
+                    margin-bottom: 4px;
+                    font-size: 12px;
+                }
+                
+                /* Карточки */
+                .stat-card {
+                    padding: 16px;
+                }
+                
+                .stat-card .stat-value {
+                    font-size: 20px;
+                }
+                
+                /* Кнопки */
+                .btn-create-custom,
+                .btn-primary,
+                .btn-outline-custom {
+                    font-size: 13px;
+                    padding: 8px 12px;
+                }
+                
+                /* Модалки */
+                .modal-container {
+                    width: 95vw;
+                    padding: 16px;
+                }
+                
+                /* Sidebar */
+                .sidebar {
+                    width: 240px;
+                }
+                
+                .main-content {
+                    margin-left: 0;
+                }
+                
+                /* Топбар */
+                .topbar {
+                    padding: 12px 16px;
+                }
+                
+                .topbar h2 {
+                    font-size: 18px;
+                }
+                
+                /* Сетка мероприятий */
+                .events-grid {
+                    grid-template-columns: 1fr;
+                    gap: 12px;
+                }
+                
+                /* Карточки сертификатов */
+                .cert-grid {
+                    grid-template-columns: 1fr;
+                }
+                
+                /* Профиль */
+                .profile-card {
+                    flex-direction: column;
+                    text-align: center;
+                }
+                
+                .profile-avatar {
+                    width: 80px;
+                    height: 80px;
+                }
+            }
+
+            /* Очень маленькие экраны */
+            @media (max-width: 480px) {
+                .dashboard-content {
+                    padding: 12px;
+                }
+                
+                .card-header {
+                    padding: 12px 16px;
+                }
+                
+                .card-body {
+                    padding: 16px;
+                }
+                
+                .stat-card {
+                    padding: 12px;
+                }
+                
+                .btn-create-custom {
+                    font-size: 12px;
+                    padding: 6px 10px;
+                }
+            }
+            
         </style>
     </head>
     <body>
@@ -220,7 +346,7 @@
                 </div>
                 <div class="topbar-right">
                     <button class="btn-create-custom" onclick="openModal('createEventModal')">
-                        <i class="bi bi-plus-lg"></i> Создать событие
+                        <i class="bi bi-plus-lg"></i> Создать мероприятие
                     </button>
                 </div>
             </header>
@@ -237,7 +363,7 @@
                         <div class="stat-card green">
                             <div class="stat-icon"><i class="bi bi-lightning-charge"></i></div>
                             <div class="stat-value">{{ events|length }}</div>
-                            <div class="stat-label">Активных событий</div>
+                            <div class="stat-label">Активных мероприятий</div>
                         </div>
                         <div class="stat-card orange">
                             <div class="stat-icon"><i class="bi bi-people"></i></div>
@@ -274,10 +400,10 @@
                                         <td>{{ event.city }}</td>
                                         <td>{{ event.registration_set.count }}</td>
                                         <td>
-                                            {% if event.date >= today %}
-                                            <span class="status-badge active">Активно</span>
-                                            {% else %}
+                                            {% if event.is_actually_completed %}
                                             <span class="status-badge completed">Завершено</span>
+                                            {% else %}
+                                            <span class="status-badge active">Активно</span>
                                             {% endif %}
                                         </td>
                                     </tr>
@@ -326,10 +452,10 @@
                                         <td>{{ event.city }}</td>
                                         <td>{{ event.registration_set.count }}</td>
                                         <td>
-                                            {% if event.date >= today %}
-                                            <span class="status-badge active">Активно</span>
-                                            {% else %}
+                                            {% if event.is_actually_completed %}
                                             <span class="status-badge completed">Завершено</span>
+                                            {% else %}
+                                            <span class="status-badge active">Активно</span>
                                             {% endif %}
                                         </td>
                                         <td>
@@ -741,12 +867,12 @@
         <!-- Create Event Modal -->
         <div class="modal-overlay" id="createEventModal">
             <div class="modal-container">
-                <h3 class="mb-3">Создать новое событие</h3>
+                <h3 class="mb-3">Создать новое мероприятие</h3>
                 <form id="createEventForm" onsubmit="submitCreateEvent(event); return false;">
                     {% csrf_token %}
                     <div class="row g-3">
                         <div class="col-12">
-                            <label class="form-label">Название события *</label>
+                            <label class="form-label">Название мероприятия *</label>
                             <input type="text" name="title" class="form-control-custom" placeholder="Введите название" required>
                         </div>
                         <div class="col-12">
@@ -805,13 +931,13 @@
        <!-- Edit Event Modal -->
         <div class="modal-overlay" id="editEventModal">
             <div class="modal-container">
-                <h3 class="mb-3">Редактировать событие</h3>
+                <h3 class="mb-3">Редактировать мероприятие</h3>
                 <form id="editEventForm" onsubmit="submitEditEvent(event); return false;">
                     {% csrf_token %}
                     <input type="hidden" name="event_id" id="editEventId">
                     <div class="row g-3">
                         <div class="col-12">
-                            <label class="form-label">Название события *</label>
+                            <label class="form-label">Название мероприятия *</label>
                             <input type="text" name="title" id="editEventTitle" class="form-control-custom" required>
                         </div>
                         <div class="col-12">
@@ -994,7 +1120,7 @@
                 
                 const titles = {
                     'dashboard': ['Главная', 'Обзор и статистика'],
-                    'events': ['Мероприятия', 'Управление событиями'],
+                    'events': ['Мероприятия', 'Управление мероприятиями'],
                     'participants': ['Участники', 'Список волонтёров'],
                     'qr': ['QR-коды', 'Генерация и сканирование'],
                     'certificates': ['Сертификаты', 'Выданные документы'],

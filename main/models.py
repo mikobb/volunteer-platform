@@ -177,6 +177,10 @@ class Event(models.Model):
         default=False,
         verbose_name='Завершено'
     )
+    
+    def is_actually_completed(self):
+        """Проверяет, завершено ли мероприятие фактически (по времени)"""
+        return self.get_status() == 'completed'
 
     def save(self, *args, **kwargs):
         # Автоматически генерируем qr_token и manual_code при создании
@@ -191,10 +195,36 @@ class Event(models.Model):
                     self.manual_code = code
                     break
         
-        super().save(*args, **kwargs)
-
+        super().save(*args, **kwargs)   
     def __str__(self):
         return self.title
+
+
+    def get_status(self):
+        """Возвращает статус мероприятия с учётом времени"""
+        now = datetime.now()
+        today = date.today()
+        
+        # Если дата в прошлом - завершено
+        if self.date < today:
+            return 'completed'
+        
+        # Если сегодня - проверяем время окончания
+        if self.date == today:
+            if self.end_time:
+                # Если есть время окончания и оно уже прошло
+                event_end_datetime = datetime.combine(self.date, self.end_time)
+                if now > event_end_datetime:
+                    return 'completed'
+            # Если время окончания не указано или ещё не наступило
+            return 'active'
+        
+        # Если дата в будущем
+        return 'active'
+    
+    def is_actually_completed(self):
+        """Проверяет, завершено ли мероприятие фактически (по времени)"""
+        return self.get_status() == 'completed'
     
 
 

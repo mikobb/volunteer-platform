@@ -210,6 +210,132 @@
         .certificate-mini-title { font-size: 14px; font-weight: 800; color: #4f46e5; letter-spacing: 1px; margin-bottom: 12px; }
         .certificate-mini-name { font-size: 13px; font-weight: 700; color: #111827; margin-bottom: 8px; }
         .certificate-mini-event { font-size: 12px; color: #6b7280; line-height: 1.4; }
+
+        /* Мобильная адаптация */
+        @media (max-width: 768px) {
+            /* Таблицы */
+            .custom-table {
+                display: block;
+                overflow-x: auto;
+                white-space: nowrap;
+            }
+            
+            .custom-table thead {
+                display: none;
+            }
+            
+            .custom-table tbody tr {
+                display: block;
+                margin-bottom: 16px;
+                border: 1px solid var(--gray-200);
+                border-radius: 8px;
+                padding: 12px;
+            }
+            
+            .custom-table tbody td {
+                display: block;
+                padding: 8px 0;
+                border: none;
+                text-align: left;
+            }
+            
+            .custom-table tbody td:before {
+                content: attr(data-label);
+                font-weight: 700;
+                color: var(--gray-600);
+                display: block;
+                margin-bottom: 4px;
+                font-size: 12px;
+            }
+            
+            /* Карточки */
+            .stat-card {
+                padding: 16px;
+            }
+            
+            .stat-card .stat-value {
+                font-size: 20px;
+            }
+            
+            /* Кнопки */
+            .btn-create-custom,
+            .btn-primary,
+            .btn-outline-custom {
+                font-size: 13px;
+                padding: 8px 12px;
+            }
+            
+            /* Модалки */
+            .modal-container {
+                width: 95vw;
+                padding: 16px;
+            }
+            
+            /* Sidebar */
+            .sidebar {
+                width: 240px;
+            }
+            
+            .main-content {
+                margin-left: 0;
+            }
+            
+            /* Топбар */
+            .topbar {
+                padding: 12px 16px;
+            }
+            
+            .topbar h2 {
+                font-size: 18px;
+            }
+            
+            /* Сетка мероприятий */
+            .events-grid {
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+            
+            /* Карточки сертификатов */
+            .cert-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            /* Профиль */
+            .profile-card {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .profile-avatar {
+                width: 80px;
+                height: 80px;
+            }
+        }
+
+        /* Очень маленькие экраны */
+        @media (max-width: 480px) {
+            .dashboard-content {
+                padding: 12px;
+            }
+            
+            .card-header {
+                padding: 12px 16px;
+            }
+            
+            .card-body {
+                padding: 16px;
+            }
+            
+            .stat-card {
+                padding: 12px;
+            }
+            
+            .btn-create-custom {
+                font-size: 12px;
+                padding: 6px 10px;
+            }
+        }
+        
     </style>
 
     <!-- Библиотека для сканирования QR-кодов -->
@@ -260,7 +386,7 @@
                 <button class="sidebar-toggle" onclick="document.getElementById('sidebar').classList.toggle('open')"><i class="bi bi-list"></i></button>
                 <div>
                     <h2 id="page-title">Главная</h2>
-                    <p id="page-subtitle" style="font-size: 13px; color: var(--gray-500); margin: 0; font-weight: 500;">Твой прогресс и доступные события</p>
+                    <p id="page-subtitle" style="font-size: 13px; color: var(--gray-500); margin: 0; font-weight: 500;">Твой прогресс и доступные мероприятия</p>
                 </div>
             </div>
             <div class="topbar-right">
@@ -282,7 +408,7 @@
                     <div class="stat-card green">
                         <div class="stat-icon"><i class="bi bi-check-circle"></i></div>
                         <div class="stat-value">{{ completed_count }}</div>
-                        <div class="stat-label">Завершённых событий</div>
+                        <div class="stat-label">Завершённых мероприятий</div>
                     </div>
                     <div class="stat-card orange">
                         <div class="stat-icon"><i class="bi bi-award"></i></div>
@@ -305,8 +431,8 @@
 
                 <div class="card">
                     <div class="card-header">
-                        <h3>Мои активные события</h3>
-                        <button class="btn-outline-custom" onclick="showSection('my-events')">Все мои события</button>
+                        <h3>Мои активные мероприятия</h3>
+                        <button class="btn-outline-custom" onclick="showSection('my-events')">Все мои мероприятия</button>
                     </div>
                     <div class="card-body">
                         <div class="row g-3">
@@ -526,6 +652,29 @@
                             <div>
                                 <h3 class="mb-1">{{ profile.full_name }}</h3>
                                 <div class="user-rank-badge" style="font-size: 12px; padding: 4px 10px;">{{ profile.rank }} ({{ profile.total_hours }} ч.) {{ profile.rank_emoji }}</div>
+                            </div>
+                        </div>
+
+                        <div class="card mt-4">
+                            <div class="card-header"><h3>Смена пароля</h3></div>
+                            <div class="card-body">
+                                <p class="text-muted small mb-3">Оставьте поля пустыми, если не хотите менять пароль</p>
+                                <form method="POST" action="{% url 'change_password' %}">
+                                    {% csrf_token %}
+                                    <div class="row g-3">
+                                        <div class="col-md-6">
+                                            <label class="form-label">Текущий пароль</label>
+                                            <input type="password" name="current_password" class="form-control-custom" placeholder="••••••••">
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label">Новый пароль</label>
+                                            <input type="password" name="new_password" class="form-control-custom" placeholder="••••••••">
+                                        </div>
+                                    </div>
+                                    <button type="submit" class="btn-primary mt-3">
+                                        <i class="bi bi-shield-lock me-1"></i> Сменить пароль
+                                    </button>
+                                </form>
                             </div>
                         </div>
                         
@@ -751,7 +900,7 @@
             }
 
             const titles = {
-                'dashboard': ['Главная', 'Твой прогресс и доступные события'],
+                'dashboard': ['Главная', 'Твой прогресс и доступные мероприятия'],
                 'my-events': ['Мои мероприятия', 'Все мероприятия, на которые ты записан'],
                 'certificates': ['Сертификаты', 'Твои электронные сертификаты'],
                 'profile': ['Профиль', 'Личные данные и статистика']

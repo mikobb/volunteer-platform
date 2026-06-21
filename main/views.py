@@ -328,6 +328,7 @@ def organization_view(request):
             'registrations': registrations,
             'certificates': certificates,
             'today': today,
+            'now': datetime.now(), 
         }
     )
 
@@ -1200,3 +1201,31 @@ def event_employees_for_volunteer(request, event_id):
         'success': True,
         'employees': employees_data
     })
+
+@login_required
+def change_password_view(request):
+    """Смена пароля волонтёра"""
+    if request.method == 'POST':
+        current_password = request.POST.get('current_password', '').strip()
+        new_password = request.POST.get('new_password', '').strip()
+        
+        if not current_password or not new_password:
+            messages.error(request, 'Заполните все поля')
+            return redirect('volunteer')
+        
+        if not request.user.check_password(current_password):
+            messages.error(request, 'Текущий пароль введён неверно')
+            return redirect('volunteer')
+        
+        if len(new_password) < 6:
+            messages.error(request, 'Новый пароль должен содержать минимум 6 символов')
+            return redirect('volunteer')
+        
+        request.user.set_password(new_password)
+        request.user.save()
+        
+        messages.success(request, 'Пароль успешно изменён. Пожалуйста, войдите снова.')
+        logout(request)
+        return redirect('auth')
+    
+    return redirect('volunteer')

@@ -120,6 +120,8 @@ urlpatterns = [
     path('checkin-qr/', views.checkin_qr_view, name='checkin_qr'),
     path('checkin-manual/', views.checkin_manual_view, name='checkin_manual'),
     path('event-employees-volunteer/<int:event_id>/', views.event_employees_for_volunteer, name='event_employees_volunteer'),
+
+    path('change-password/', views.change_password_view, name='change_password'),
     
 ]
 
