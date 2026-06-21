@@ -1,16 +1,12 @@
-from reportlab.pdfbase import pdfmetrics
-from reportlab.pdfbase.ttfonts import TTFont
-from django.shortcuts import render, redirect
+
 from django.contrib.auth.models import User
 from django.contrib.auth import login
 from django.contrib.auth import authenticate 
-from django.contrib.auth.decorators import login_required
 from django.contrib.auth import logout
 from datetime import date, timedelta, datetime
 from django.contrib import messages
-from django.http import HttpResponse
-import re
 import qrcode
+import re
 from io import BytesIO
 from django.http import JsonResponse, HttpResponse
 from django.shortcuts import get_object_or_404
@@ -20,9 +16,7 @@ from reportlab.platypus import (
     Paragraph,
     Spacer
 )
-from reportlab.lib import colors
-from reportlab.lib.enums import TA_CENTER
-from reportlab.lib.styles import ParagraphStyle
+
 from reportlab.lib.styles import getSampleStyleSheet
 from .models import Employee
 from django.core.files.storage import default_storage
@@ -32,6 +26,27 @@ from .models import (
     Event,
     Registration,
     OrganizationProfile,
+)
+
+from reportlab.pdfbase import pdfmetrics
+from reportlab.pdfbase.ttfonts import TTFont
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth.decorators import login_required
+from datetime import date
+from django.http import HttpResponse
+from pathlib import Path
+
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
+from reportlab.lib import colors
+from reportlab.lib.enums import TA_CENTER
+from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
+
+from .models import (
+    VolunteerProfile,
+    Event,
+    Registration,
+    OrganizationProfile,
+    Employee,
 )
 
 def get_organization_name(user):
@@ -395,9 +410,27 @@ def get_organization_image(user):
     return org_images.get(user.username, 'images/organizations/org1.png')
 
 
+
+# ===== РЕГИСТРАЦИЯ ШРИФТА =====
+# Получаем путь к папке проекта
+BASE_DIR = Path(__file__).resolve().parent.parent
+
+# Путь к шрифту DejaVu Sans
+FONT_PATH = BASE_DIR / 'main' / 'static' / 'fonts' / 'DejaVuSans.ttf'
+
+# Регистрируем шрифт, если файл существует
+if FONT_PATH.exists():
+    pdfmetrics.registerFont(TTFont('DejaVuSans', str(FONT_PATH)))
+    FONT_NAME = 'DejaVuSans'
+else:
+    # Если шрифт не найден, используем Helvetica (без кириллицы!)
+    FONT_NAME = 'Helvetica'
+    print(f"⚠️ Шрифт не найден по пути: {FONT_PATH}")
+
+
 @login_required
 def organization_certificate_view(request, registration_id):
-    """Организация может скачать сертификат волонтёра за своё мероприятие"""
+    """Организация скачивает сертификат волонтёра"""
     organization_name = get_organization_name(request.user)
     
     registration = get_object_or_404(
@@ -407,28 +440,17 @@ def organization_certificate_view(request, registration_id):
         checked_in=True
     )
     
-    response = HttpResponse(
-        content_type='application/pdf'
-    )
-    response['Content-Disposition'] = (
-        f'attachment; filename="certificate_{registration.id}.pdf"'
-    )
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = f'attachment; filename="certificate_{registration.id}.pdf"'
     
     doc = SimpleDocTemplate(response)
-    
-    pdfmetrics.registerFont(
-        TTFont(
-            'Arial',
-            r'C:\Windows\Fonts\arial.ttf'
-        )
-    )
-    
     styles = getSampleStyleSheet()
     
+    # Стили с русским шрифтом
     title_style = ParagraphStyle(
         'TitleStyle',
         parent=styles['Title'],
-        fontName='Arial',
+        fontName=FONT_NAME,  # Используем зарегистрированный шрифт
         alignment=TA_CENTER,
         fontSize=28,
         spaceAfter=30
@@ -437,7 +459,7 @@ def organization_certificate_view(request, registration_id):
     name_style = ParagraphStyle(
         'NameStyle',
         parent=styles['Heading1'],
-        fontName='Arial',
+        fontName=FONT_NAME,
         alignment=TA_CENTER,
         fontSize=24,
         textColor=colors.darkblue,
@@ -447,7 +469,7 @@ def organization_certificate_view(request, registration_id):
     center_style = ParagraphStyle(
         'CenterStyle',
         parent=styles['BodyText'],
-        fontName='Arial',
+        fontName=FONT_NAME,
         alignment=TA_CENTER,
         fontSize=14,
         leading=24
@@ -474,9 +496,74 @@ def organization_certificate_view(request, registration_id):
     ]
     
     doc.build(content)
-    
     return response
 
+
+@login_required
+def certificate_view(request, registration_id):
+    """Волонтёр скачивает свой сертификат"""
+    registration = get_object_or_404(
+        Registration,
+        id=registration_id,
+        volunteer=request.user.volunteerprofile
+    )
+
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = f'attachment; filename="certificate_{registration.id}.pdf"'
+
+    doc = SimpleDocTemplate(response)
+    styles = getSampleStyleSheet()
+    
+    title_style = ParagraphStyle(
+        'TitleStyle',
+        parent=styles['Title'],
+        fontName=FONT_NAME,
+        alignment=TA_CENTER,
+        fontSize=28,
+        spaceAfter=30
+    )
+
+    name_style = ParagraphStyle(
+        'NameStyle',
+        parent=styles['Heading1'],
+        fontName=FONT_NAME,
+        alignment=TA_CENTER,
+        fontSize=24,
+        textColor=colors.darkblue,
+        spaceAfter=25
+    )
+
+    center_style = ParagraphStyle(
+        'CenterStyle',
+        parent=styles['BodyText'],
+        fontName=FONT_NAME,
+        alignment=TA_CENTER,
+        fontSize=14,
+        leading=24
+    )
+
+    content = [
+        Spacer(1, 40),
+        Paragraph("СЕРТИФИКАТ", title_style),
+        Spacer(1, 20),
+        Paragraph("Настоящим подтверждается, что", center_style),
+        Spacer(1, 15),
+        Paragraph(registration.volunteer.full_name, name_style),
+        Paragraph("принял(а) участие в волонтёрском мероприятии", center_style),
+        Spacer(1, 15),
+        Paragraph(f"<b>«{registration.event.title}»</b>", center_style),
+        Spacer(1, 20),
+        Paragraph(f"Подтверждено часов: <b>{registration.event.hours}</b>", center_style),
+        Spacer(1, 10),
+        Paragraph(f"Дата проведения: <b>{registration.event.date}</b>", center_style),
+        Spacer(1, 10),
+        Paragraph(f"Организатор: <b>{registration.event.organization}</b>", center_style),
+        Spacer(1, 50),
+        Paragraph("Благодарим за вклад в развитие добровольческого движения!", center_style),
+    ]
+
+    doc.build(content)
+    return response
 
 
 @login_required
@@ -803,122 +890,6 @@ def join_event(request, event_id):
     )
     return redirect('volunteer')
 
-
-@login_required
-def certificate_view(request, registration_id):
-
-    registration = Registration.objects.get(
-        id=registration_id,
-        volunteer=request.user.volunteerprofile
-    )
-
-    response = HttpResponse(
-        content_type='application/pdf'
-    )
-
-    response['Content-Disposition'] = (
-        f'attachment; filename="certificate_{registration.id}.pdf"'
-    )
-
-    doc = SimpleDocTemplate(response)
-
-    pdfmetrics.registerFont(
-        TTFont(
-            'Arial',
-            r'C:\Windows\Fonts\arial.ttf'
-        )
-    )
-
-    styles = getSampleStyleSheet()
-
-    title_style = ParagraphStyle(
-        'TitleStyle',
-        parent=styles['Title'],
-        fontName='Arial',
-        alignment=TA_CENTER,
-        fontSize=28,
-        spaceAfter=30
-    )
-
-    name_style = ParagraphStyle(
-        'NameStyle',
-        parent=styles['Heading1'],
-        fontName='Arial',
-        alignment=TA_CENTER,
-        fontSize=24,
-        textColor=colors.darkblue,
-        spaceAfter=25
-    )
-
-    center_style = ParagraphStyle(
-        'CenterStyle',
-        parent=styles['BodyText'],
-        fontName='Arial',
-        alignment=TA_CENTER,
-        fontSize=14,
-        leading=24
-    )
-
-    content = [
-
-        Spacer(1, 40),
-
-        Paragraph(
-            "СЕРТИФИКАТ",
-            title_style
-        ),
-
-        Spacer(1, 20),
-
-        Paragraph(
-            "Настоящим подтверждается, что",
-            center_style
-        ),
-
-        Spacer(1, 15),
-
-        Paragraph(
-            registration.volunteer.full_name,
-            name_style
-        ),
-
-        Paragraph(
-            "принял(а) участие в волонтёрском мероприятии",
-            center_style
-        ),
-
-        Spacer(1, 15),
-
-        Paragraph(
-            f"<b>«{registration.event.title}»</b>",
-            center_style
-        ),
-
-        Spacer(1, 20),
-
-        Paragraph(
-            f"Подтверждено часов: <b>{registration.event.hours}</b>",
-            center_style
-        ),
-
-        Spacer(1, 10),
-
-        Paragraph(
-            f"Дата проведения: <b>{registration.event.date}</b>",
-            center_style
-        ),
-
-        Spacer(1, 50),
-
-        Paragraph(
-            "Благодарим за вклад в развитие добровольческого движения!",
-            center_style
-        ),
-    ]
-
-    doc.build(content)
-
-    return response
 
 @login_required
 def cancel_registration(
