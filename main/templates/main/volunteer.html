@@ -443,7 +443,15 @@
                                     <div class="flex-grow-1">
                                         <div class="d-flex justify-content-between align-items-center mb-1">
                                             <strong>{{ registration.event.title }}</strong>
-                                            <span class="status-badge active">{{ registration.event.date|date:"d E Y" }}</span>
+                                            {% if registration.event.is_completed %}
+                                                <span class="status-badge completed">
+                                                    <i class="bi bi-check-circle-fill"></i> Завершено
+                                                </span>
+                                            {% else %}
+                                                <span class="status-badge active">
+                                                    {{ registration.event.date|date:"d E Y" }}
+                                                </span>
+                                            {% endif %}
                                         </div>
                                         <div class="event-meta mb-0">
                                             <span><i class="bi bi-geo-alt"></i> {{ registration.event.city }}</span>
@@ -473,7 +481,15 @@
                                         <div class="event-org"><i class="bi bi-building"></i> {{ event.organization }}</div>
                                         <div class="event-title">{{ event.title }}</div>
                                     </div>
-                                    <span class="status-badge active">{{ event.date|date:"d E" }}</span>
+                                    {% if event.is_completed %}
+                                        <span class="status-badge completed">
+                                            <i class="bi bi-check-circle-fill"></i> Завершено
+                                        </span>
+                                    {% else %}
+                                        <span class="status-badge active">
+                                            {{ event.date|date:"d E" }}
+                                        </span>
+                                    {% endif %}
                                 </div>
                                 <div class="event-card-body">
                                     <div class="event-description">{{ event.description }}</div>
@@ -549,12 +565,24 @@
                                     <td>{{ registration.event.date|date:"d E Y" }}</td>
                                     <td>{{ registration.event.hours }} ч.</td>
                                     <td>
-                                        {% if registration.checked_in %}
-                                            <span class="status-badge active"><i class="bi bi-check-circle-fill"></i> Отмечен</span>
-                                        {% elif registration.event.is_completed %}
-                                            <span class="status-badge completed">Не отмечен</span>
+                                        {% if registration.event.is_completed %}
+                                            {% if registration.checked_in %}
+                                                <span class="status-badge completed">
+                                                    <i class="bi bi-check-circle-fill"></i> Завершено
+                                                </span>
+                                            {% else %}
+                                                <span class="status-badge completed">
+                                                    <i class="bi bi-x-circle"></i> Не отмечен
+                                                </span>
+                                            {% endif %}
+                                        {% elif registration.checked_in %}
+                                            <span class="status-badge active">
+                                                <i class="bi bi-check-circle-fill"></i> Отмечен
+                                            </span>
                                         {% else %}
-                                            <span class="status-badge pending">Записан</span>
+                                            <span class="status-badge pending">
+                                                <i class="bi bi-clock"></i> Записан
+                                            </span>
                                         {% endif %}
                                     </td>
                                     <td>

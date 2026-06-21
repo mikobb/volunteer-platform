@@ -230,8 +230,7 @@ def volunteer_view(request):
     
     # Все мероприятия (кроме завершённых) с аннотацией количества записанных
     events = Event.objects.filter(
-        is_completed=False,
-        date__gte=date.today()
+        is_completed=False  # только незавершённые, без привязки к дате
     ).annotate(
         registered_count=Count('registration')
     ).order_by('date', 'start_time')
@@ -246,8 +245,7 @@ def volunteer_view(request):
     
     # Активные события (будущие, на которые записан)
     active_events = registrations.filter(
-        event__date__gte=date.today(),
-        event__is_completed=False
+        event__is_completed=False  # только незавершённые
     )
     
     # Сертификаты (отмеченные через QR)

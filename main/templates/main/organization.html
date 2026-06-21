@@ -296,7 +296,7 @@
                     padding: 6px 10px;
                 }
             }
-            
+
         </style>
     </head>
     <body>
@@ -399,13 +399,21 @@
                                         <td>{{ event.date|date:"d E Y" }}</td>
                                         <td>{{ event.city }}</td>
                                         <td>{{ event.registration_set.count }}</td>
-                                        <td>
-                                            {% if event.is_actually_completed %}
-                                            <span class="status-badge completed">Завершено</span>
-                                            {% else %}
-                                            <span class="status-badge active">Активно</span>
-                                            {% endif %}
-                                        </td>
+                                            <td>
+                                                {% if event.is_completed %}
+                                                    <span class="status-badge completed">
+                                                        <i class="bi bi-check-circle-fill"></i> Завершено
+                                                    </span>
+                                                {% elif event.date >= today %}
+                                                    <span class="status-badge active">
+                                                        <i class="bi bi-calendar-event"></i> Запланировано
+                                                    </span>
+                                                {% else %}
+                                                    <span class="status-badge pending">
+                                                        <i class="bi bi-clock"></i> Прошло
+                                                    </span>
+                                                {% endif %}
+                                            </td>
                                     </tr>
                                     {% empty %}
                                     <tr>
