@@ -642,15 +642,14 @@ def generate_qr_view(request, event_id):
         organization=organization_name
     )
     
-    # Формируем данные для QR: URL с токеном
-    # Волонтёр отсканирует это, и попадёт на страницу проверки
-    qr_data = f"CHECKIN:{event.qr_token}"
+    # Убираем префикс, оставляем только токен
+    qr_data = event.qr_token  # <-- Было: f"CHECKIN:{event.qr_token}"
     
     # Генерируем QR-код
     qr = qrcode.QRCode(
         version=1,
-        error_correction=qrcode.constants.ERROR_CORRECT_M,
-        box_size=10,
+        error_correction=qrcode.constants.ERROR_CORRECT_H,  # <-- Увеличил надёжность
+        box_size=15,  # <-- Увеличил размер для лучшего сканирования
         border=4,
     )
     qr.add_data(qr_data)
@@ -676,7 +675,7 @@ def get_event_qr_info(request, event_id):
         organization=organization_name
     )
     
-    registrations = Registration.objects.filter(event=event)
+    registrations = Registration.objects.filter(event=event)    
     checked_in_count = registrations.filter(checked_in=True).count()
     total_count = registrations.count()
     

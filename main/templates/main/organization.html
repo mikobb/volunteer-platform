@@ -1270,6 +1270,10 @@
                         document.getElementById('qrTotalCount').textContent = ev.total;
                         
                         const percent = ev.total > 0 ? Math.round((ev.checked_in / ev.total) * 100) : 0;
+                        const progressBar = document.getElementById('qrProgressBar');
+                        if (progressBar) {
+                            progressBar.style.width = percent + '%';
+                        }
                         document.getElementById('qrProgressBar').style.width = percent + '%';
                         
                         document.getElementById('manualSpecialCode').value = ev.manual_code;
