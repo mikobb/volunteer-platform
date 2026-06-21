@@ -230,15 +230,8 @@
             margin-bottom: 12px;
             border: 1px solid var(--gray-200);
             box-shadow: 0 1px 2px rgba(0,0,0,0.05);
-            width: 100%;  /* ← ДОБАВЛЕНО */
-            box-sizing: border-box;  /* ← ДОБАВЛЕНО */
-        }
-
-        /* Контейнер для мобильных карточек */
-        .mobile-cards {
-            width: 100%;  /* ← ДОБАВЛЕНО */
-            padding: 16px;  /* ← ДОБАВЛЕНО */
-            box-sizing: border-box;  /* ← ДОБАВЛЕНО */
+            width: 100%;
+            box-sizing: border-box;
         }
 
         .my-event-mobile-card .my-event-header {
@@ -249,7 +242,7 @@
             margin-bottom: 12px;
             padding-bottom: 12px;
             border-bottom: 1px solid var(--gray-100);
-            width: 100%;  /* ← ДОБАВЛЕНО */
+            width: 100%;
         }
 
         .my-event-mobile-card .my-event-header h6 {
@@ -257,7 +250,7 @@
             font-weight: 700;
             color: var(--gray-900);
             margin-bottom: 4px;
-            word-break: break-word;  /* ← ДОБАВЛЕНО */
+            word-break: break-word;
         }
 
         .my-event-mobile-card .info-row {
@@ -267,14 +260,14 @@
             margin-bottom: 8px;
             font-size: 13px;
             color: var(--gray-600);
-            width: 100%;  /* ← ДОБАВЛЕНО */
+            width: 100%;
         }
 
         .my-event-mobile-card .info-row i {
             color: var(--primary);
             margin-top: 2px;
             width: 16px;
-            flex-shrink: 0;  /* ← ДОБАВЛЕНО */
+            flex-shrink: 0;
         }
 
         .my-event-mobile-card .actions {
@@ -282,14 +275,19 @@
             gap: 8px;
             margin-top: 12px;
             flex-wrap: wrap;
-            width: 100%;  /* ← ДОБАВЛЕНО */
+            width: 100%;
         }
 
         .my-event-mobile-card .actions button,
-        .my-event-mobile-card .actions a {
+        .my-event-mobile-card .actions a,
+        .my-event-mobile-card .actions form {
             flex: 1;
             min-width: 100px;
             text-align: center;
+        }
+
+        .my-event-mobile-card .actions form button {
+            width: 100%;
         }
 
         /* Sidebar Toggle */
@@ -320,18 +318,16 @@
             
             .mobile-cards {
                 display: block !important;
-            }
-
-            .mobile-cards {
-                display: block !important;
-                padding: 16px;  /* ← ДОБАВЬ ЭТУ СТРОКУ */
-                width: 100%;    /* ← ДОБАВЬ ЭТУ СТРОКУ */
+                padding: 16px;
+                width: 100%;
+                box-sizing: border-box;
             }
             
             .my-event-mobile-card {
-                width: 100%;      /* ← ДОБАВЬ ЭТИ СТРОКИ */
-                margin-left: 0;   /* ← ДОБАВЬ ЭТИ СТРОКИ */
-                margin-right: 0;  /* ← ДОБАВЬ ЭТИ СТРОКИ */
+                width: 100%;
+                margin-left: 0;
+                margin-right: 0;
+                box-sizing: border-box;
             }
             
             /* Cards */
