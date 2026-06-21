@@ -1265,6 +1265,8 @@
                 .then(data => {
                     if (data.success) {
                         const ev = data.event;
+
+                        console.log('QR Info:', data.event);
                         
                         document.getElementById('qrCheckedCount').textContent = ev.checked_in;
                         document.getElementById('qrTotalCount').textContent = ev.total;
